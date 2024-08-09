@@ -2,13 +2,12 @@ from django.shortcuts import render,get_list_or_404,redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
+
 from prodect.models import Products
 from customers.models import Customer
 from orders.models import Cart,CartItems
 from orders.forms import OrderForm
-def sign_out(request):
-    logout(request)
-    return redirect('index')
+
 
 
 def index(request):
@@ -38,9 +37,9 @@ def account(request):
                 phone=phone,
                 address=address
             )   
-            return redirect('index') 
+            return redirect('account') 
         except Exception as e:
-            error_message="please check your data",
+            error_message="please check your data"
             messages.error(request,error_message)
     if request.POST and 'login' in request.POST:
         context['register']=False
@@ -53,8 +52,14 @@ def account(request):
             login(request,user)
             return redirect('index')
         else:
-            messages.error(request,'not user')
+            messages.error(request,'user not existing please register')
     return render(request,'account.html',context)
+
+
+def sign_out(request):
+    logout(request)
+    return redirect('index')
+
 def cart(request):
     user=request.user
     customer=user.profile
@@ -95,18 +100,18 @@ def removeitem(request,pk):
         item.delete()
     return redirect('cart')
 
+#Part 3.1 view to display all products
 def products(request):
     products_list={'products':Products.objects.all()}
     print('details is :',product_details)
     return render(request,'products.html',products_list)
 
+#Part 3.2 detailed view of products
 def product_details(request,pk):
-
     product = get_list_or_404(Products,pk=pk)
     print('iage',product)
     return render(request,'product_details.html',{'product':product})   
-
-
+#Part 4.1 order form
 def orderform(request):
     form = OrderForm()
     order = {
@@ -126,17 +131,26 @@ def checkout(request):
 
             )
             if order_obj:
-                order_obj.orederstatus=Cart.ORDER_CONFORMED
-                order_obj.save()
+                form = OrderForm(request.POST, instance=order_obj)
+                if form.is_valid():
+                    form.save(commit=False)
+                    order_obj.orederstatus = Cart.ORDER_CONFORMED
+                    order_obj.save()
                 status_message="Your order is conformed"
                 messages.success(request,status_message)
             else:
-                status_message="Your order "
+                status_message="Your order not confomed"
                 messages.error(request,status_message)
         except Exception as e:
-            status_message="Your order is "
+            status_message="Your order is not confomed"
             messages.error(request,status_message)
     return redirect('orders')
-
+# Part 6.2 order history
 def orders(request):
-    return render(request,'orders.html')
+    user = request.user
+    cousomer = user.profile
+    allorders = Cart.objects.filter(owner=cousomer).exclude(orederstatus=Cart.CART_STAGE)
+    context = {
+        'orders' : allorders
+    }
+    return render(request,'orders.html',context)

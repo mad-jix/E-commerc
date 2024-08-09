@@ -21,7 +21,7 @@
                 <div class="logo">
                     <a href="index.html"><img src={% static "images/logo.png" %} alt="logo" width="125px"></a>
                 </div>
-                <nav>
+                <nav style="margin-top: -15px;" >
                     <ul id="MenuItems">
                         <li><a href={% url "index" %}>Home</a></li>
                         <li><a href={% url "products" %}>Products</a></li>
@@ -29,12 +29,16 @@
                         <li><a href={% url "account" %}>Account</a></li>
                         {%  else  %}
                         <li><a href={% url "logout" %}>logout</a></li>
+                        <li><a href={% url "orders" %}>orders</a></li>
+
                         
                     </ul>
+                    <a href={% url "cart" %}><img src={% static "images/cart.png" %} style="margin-bottom: -7px;" width="30px" height="30px"></a>
+                    {% endif %}
                 </nav>
-                <a href={% url "cart" %}><img src={% static "images/cart.png" %} width="30px" height="30px"></a>
-                {% endif %}
-                <img src={% static "images/menu.png" %} class="menu-icon" onclick="menutoggle()">
+                
+                        
+                <img style="margin-bottom: 10px;" src={% static "images/menu.png" %} class="menu-icon" onclick="menutoggle()">
             </div>
 {% block banner %}
             <div class="row">

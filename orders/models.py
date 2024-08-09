@@ -2,16 +2,15 @@ from django.db import models
 from customers.models import Customer
 from prodect.models import Products
 
-# Create your models here.
+# Part 2.4 order model
 class Cart(models.Model):
     LIVE=1
     DELETE=0
     DELETE_CHOICES=((LIVE,'live'),(DELETE,'delete'))
     CART_STAGE=0
-    ORDER_CONFORMED=1
-    ORDER_PROCESSED=2
-    DELIVERED=3
-    REJECTED=4
+    ORDER_PROCESSED=1
+    DELIVERED=2
+    REJECTED=3
     STATUS_CHOICE=((ORDER_PROCESSED,"ORDER_PROCESSED"),
                    (DELIVERED,"DELIVERED"),
                    (REJECTED,"REJECTED")
@@ -30,7 +29,7 @@ class Cart(models.Model):
         return "orders-{}-{}".format(self.id,self.owner)
 
 
-
+# Part 2.3 cart model
 class CartItems(models.Model):
     product=models.ForeignKey(Products,related_name='addcart',on_delete=models.SET_NULL,null=True)
     quantity=models.IntegerField(default=1)
